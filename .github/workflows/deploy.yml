@@ -24,12 +24,30 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: Set up Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add dist -f
+
+      - name: Check if gh-pages branch exists and create it if not
+        run: |
+          # Fetch all branches to check if gh-pages exists
+          git fetch origin
+          
+          # Check if the gh-pages branch exists
+          if ! git show-ref --verify --quiet refs/heads/gh-pages; then
+            echo "gh-pages branch does not exist. Creating it now."
+            git checkout --orphan gh-pages  # Create the branch without history
+            git rm -rf .  # Clean the directory (remove old files)
+            git commit --allow-empty -m "Initial gh-pages commit"  # Commit an empty change
+            git push origin gh-pages  # Push the gh-pages branch to the remote
+            git checkout main  # Switch back to main
+          fi
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git add dist -f  # Force add dist folder to the commit
           git commit -m "Deploy to GitHub Pages"
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" main:gh-pages
+          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
