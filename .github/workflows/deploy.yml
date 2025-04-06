@@ -42,6 +42,7 @@ jobs:
             git commit --allow-empty -m "Initial gh-pages commit"  # Commit an empty change
             git push --force origin gh-pages  # Push the gh-pages branch to the remote
             git checkout main  # Switch back to main
+          fi
 
       - name: Deploy to GitHub Pages
         run: |
