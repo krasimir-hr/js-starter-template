@@ -42,17 +42,23 @@ jobs:
             git commit --allow-empty -m "Initial gh-pages commit"  # Commit an empty change
             git push --force origin gh-pages  # Push the gh-pages branch to the remote
             git checkout main  # Switch back to main
-          fi
+          fi  # Close the if statement
 
-      - name: Deploy to GitHub Pages
+      - name: Remove unnecessary files and add dist content to gh-pages branch
         run: |
-
-          git rm -f README.md
-          git rm -f LICENSE
-          git rm -f .gitignore
+          # Checkout gh-pages branch
+          git checkout gh-pages
           
-          git add dist -f  # Force add dist folder to the commit
+          # Remove README.md and any other files you don't want in gh-pages
+          git rm -f README.md LICENSE .gitignore package.json package-lock.json babel.config.json webpack.config.js src/index.html src/index.js
+
+          # Add dist folder content
+          git add dist/*
+
+          # Commit the changes to gh-pages branch
           git commit -m "Deploy to GitHub Pages"
+
+          # Push the gh-pages branch
           git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages:gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
