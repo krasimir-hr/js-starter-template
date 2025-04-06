@@ -46,6 +46,11 @@ jobs:
 
       - name: Deploy to GitHub Pages
         run: |
+
+          git rm -f README.md
+          git rm -f LICENSE
+          git rm -f .gitignore
+          
           git add dist -f  # Force add dist folder to the commit
           git commit -m "Deploy to GitHub Pages"
           git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages:gh-pages
